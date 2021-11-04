@@ -1,8 +1,11 @@
-//
-// Created by chspo on 2021-11-03.
-//
+#pragma once
 
-#ifndef CSASSIGNMENT4_HTTPRESPONSE_HPP
-#define CSASSIGNMENT4_HTTPRESPONSE_HPP
+class HttpResponse {
 
-#endif //CSASSIGNMENT4_HTTPRESPONSE_HPP
+private:
+    int clientsocket;
+public:
+    HttpResponse(int& cs):clientsocket(cs){};
+    void writeRes(char *, int);
+};
+

@@ -1,9 +1,9 @@
-//
-// Created by chspo on 2021-11-03.
-//
-
 #pragma once
 
-class HttpResponse {
-
+class HttpRequest {
+private:
+    int clientsocket;
+public:
+    HttpRequest(int& cs):clientsocket(cs){};
+    void readReq(char *, int);
 };

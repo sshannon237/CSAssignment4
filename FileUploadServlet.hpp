@@ -4,6 +4,10 @@
 
 #pragma once
 
+#include "HttpRequest.hpp"
+#include "HttpResponse.hpp"
+#include "Servlet.hpp"
+
 class FileUploadServlet : public Servlet {
 public:
     void doGet(HttpRequest request, HttpResponse response) override;

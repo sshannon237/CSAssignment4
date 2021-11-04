@@ -7,8 +7,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <dirent.h>
-#include "ServerThread.cpp"
-static void *doit(void *);
+#include <string>
+
+#include "HttpRequest.hpp"
+#include "HttpResponse.hpp"
+using namespace std;
+static void *run(void *);
 main() {
 
     // set up socket to listen, then create a thread
@@ -45,7 +49,7 @@ main() {
 // This is the run class. I think we can get away with just leaving this in Server.cpp 
 // instead of putting it in ServerThread.cpp(We would delete ServerThread.cpp in this case)
 
-// Finsihsed run method will look something like this:
+// Finished run method will look something like this:
 //
 // 1. open socket
 // 2. create httpresponce/httprequest classes which will take in the socket and have
@@ -64,12 +68,13 @@ static void * run(void * arg) {
     int clientsock;
     printf("before assignment\n");
     clientsock = (long long) (arg);
+    HttpRequest req = HttpRequest(clientsock);
+    HttpResponse res = HttpResponse(clientsock);
+
     printf("after assignment\n");
     /* pthread_detach(pthread_self());*/
     // Reads socket - will be associated with HttpRequest class
-    if ((rval = read(clientsock, buf1, 80)) < 0){
-        perror("reading socket");
-    }
+    req.readReq(buf1, sizeof(buf1)/sizeof(buf1[0]));
 
     // Prints HttpRequest. This will be logic that is in the doGet method.
     printf("%s\n",buf1);
@@ -86,9 +91,10 @@ static void * run(void * arg) {
     // This writes to the socket. This will associated with HttpResponce class
     while (d = readdir(dirp)) {
         strcpy(buf2,d->d_name);
-        if ((rval = write(clientsock, buf2, 1024)) < 0){
-            perror("writing socket");
-        }
+        res.writeRes(buf2,1024);
+        // if ((rval = write(clientsock, buf2, 1024)) < 0){
+        //     perror("writing socket");
+        // }
     }
 
     // close clientsocket
