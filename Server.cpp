@@ -11,10 +11,12 @@
 
 #include "HttpRequest.hpp"
 #include "HttpResponse.hpp"
+// #include "Servlet.hpp"
+#include "FileUploadServlet.hpp"
 using namespace std;
 static void *run(void *);
-main() {
-
+main()
+{
     // set up socket to listen, then create a thread
     int sock, length;
     struct sockaddr_in server;
@@ -22,31 +24,34 @@ main() {
     int i;
     pthread_t tid;
 
-    sock = socket (AF_INET, SOCK_STREAM, 0);
-    if (sock < 0) {
+    sock = socket(AF_INET, SOCK_STREAM, 0);
+    if (sock < 0)
+    {
         perror("opening stream socket");
     }
 
     server.sin_family = AF_INET;
     server.sin_addr.s_addr = INADDR_ANY;
-    server.sin_port = 8888;
+    server.sin_port = htons(8888);
 
-    if (bind (sock, (struct sockaddr *)&server, sizeof server) < 0)  {    perror ("binding stream socket");
+    if (bind(sock, (struct sockaddr *)&server, sizeof server) < 0)
+    {
+        perror("binding stream socket");
     }
-    listen (sock, 5);
-    while(1){
+    listen(sock, 5);
+    while (1)
+    {
         msgsock = accept(sock, (struct sockaddr *)0, (socklen_t *)0);
-        if (msgsock == -1) {
+        if (msgsock == -1)
+        {
             perror("accept");
         }
-        printf("before thread create\n");
         // Create thread
-        pthread_create(&tid, NULL, run, (void*) msgsock);
-        printf("after thread create\n");
+        pthread_create(&tid, NULL, run, (void *)msgsock);
     }
 }
 
-// This is the run class. I think we can get away with just leaving this in Server.cpp 
+// This is the run class. I think we can get away with just leaving this in Server.cpp
 // instead of putting it in ServerThread.cpp(We would delete ServerThread.cpp in this case)
 
 // Finished run method will look something like this:
@@ -56,49 +61,73 @@ main() {
 // methods for reading/writing to socket
 // 3. parse the beginning of the request to find out if get or post request
 // 4. call doGet or doPost
-static void * run(void * arg) {
+static void *run(void *arg)
+{
 
-    // open socket
-    DIR * dirp;
-    struct direct *d;
-    char buf1[80];
+    // DIR *dirp;
+    // struct direct *d;
+    char reqType[1024];
     char buf2[102400];
-
+    // open socket
     int rval;
     int clientsock;
-    printf("before assignment\n");
-    clientsock = (long long) (arg);
+    clientsock = (long long)(arg);
     HttpRequest req = HttpRequest(clientsock);
     HttpResponse res = HttpResponse(clientsock);
-
-    printf("after assignment\n");
     /* pthread_detach(pthread_self());*/
     // Reads socket - will be associated with HttpRequest class
-    req.readReq(buf1, sizeof(buf1)/sizeof(buf1[0]));
+    // if ((rval = read(clientsock, buf1, 80)) < 0){
+    //     perror("reading socket");
+    // }
+
+    // Read first x bits to figure out if get request or post request
+
+    req.readReq(reqType, 1024);
+
+    string reqTypeStr(reqType);
+
+    FileUploadServlet servlet = FileUploadServlet();
+
+    if (reqTypeStr.find("GET / ") != string::npos)
+    {
+        servlet.doGet(req, res);
+    }
+    else if (reqTypeStr.find("POST") != string::npos)
+    {
+        servlet.doPost(req, res);
+    }
+
+    // char res3[] = "";
+
+    // res.writeRes(res1,1024);
+    // res.writeRes(res2,1024);
+    // res.writeRes(res3,1024);
+
+    //call doGet or doPost
 
     // Prints HttpRequest. This will be logic that is in the doGet method.
-    printf("%s\n",buf1);
-
 
     // This opens a directory for responding to a client (doPost type things)
-    dirp = opendir(buf1);
-    if (dirp == NULL) {
-        perror("openning dir");
-        return (NULL);
-    }
-    buf2[0] = '\0';
+    // dirp = opendir(buf1);
+    // if (dirp == NULL) {
+    //     perror("openning dir");
+    //     return (NULL);
+    // }
+    // buf2[0] = '\0';
 
     // This writes to the socket. This will associated with HttpResponce class
-    while (d = readdir(dirp)) {
-        strcpy(buf2,d->d_name);
-        res.writeRes(buf2,1024);
-        // if ((rval = write(clientsock, buf2, 1024)) < 0){
-        //     perror("writing socket");
-        // }
-    }
+    // while (d = readdir(dirp)) {
+    //     strcpy(buf2,d->d_name);
+    // res.writeRes(buf2,1024);
+    // if ((rval = write(clientsock, res1, 1024)) < 0)
+    // {
+    //     perror("writing socket");
+    // }
+
+    // }
 
     // close clientsocket
-    closedir (dirp);
+    // closedir(dirp);
     close(clientsock);
     return (NULL);
 }
