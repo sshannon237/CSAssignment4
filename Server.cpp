@@ -64,8 +64,7 @@ main()
 // methods for reading/writing to socket
 // 3. parse the beginning of the request to find out if get or post request
 // 4. call doGet or doPost
-static void *run(void *arg)
-{
+static void *run(void *arg) {
 
     // DIR *dirp;
     // struct direct *d;
@@ -84,7 +83,7 @@ static void *run(void *arg)
 
     // Read first x bits to figure out if get request or post request
 
-    req.readReq(reqType, 1024);
+    req.readReq(reqType, 102400);
 
     string reqTypeStr(reqType);
 
