@@ -34,21 +34,24 @@ main()
     server.sin_addr.s_addr = INADDR_ANY;
     server.sin_port = htons(8888);
 
-    if (bind(sock, (struct sockaddr *)&server, sizeof server) < 0)
-    {
+    if (bind(sock, (struct sockaddr *)&server, sizeof server) < 0) {
         perror("binding stream socket");
     }
     listen(sock, 5);
-    while (1)
-    {
+    while (1) {
         msgsock = accept(sock, (struct sockaddr *)0, (socklen_t *)0);
         if (msgsock == -1)
         {
             perror("accept");
         }
         // Create thread
+        printf("Before Thread\n");
         pthread_create(&tid, NULL, run, (void *)msgsock);
+        printf("After Thread\n");
+        
     }
+    
+    return 0;
 }
 
 // This is the run class. I think we can get away with just leaving this in Server.cpp
@@ -66,8 +69,7 @@ static void *run(void *arg)
 
     // DIR *dirp;
     // struct direct *d;
-    char reqType[1024];
-    char buf2[102400];
+    char reqType[102400];
     // open socket
     int rval;
     int clientsock;
@@ -90,13 +92,16 @@ static void *run(void *arg)
 
     if (reqTypeStr.find("GET / ") != string::npos)
     {
+        // printf("Calling get\n");
         servlet.doGet(req, res);
-    }
-    else if (reqTypeStr.find("POST") != string::npos)
+    } else if (reqTypeStr.find("POST") != string::npos)
     {
+        // printf("Calling post\n");
         servlet.doPost(req, res);
     }
 
+    close(clientsock);
+    printf("In Thread\n");
     // char res3[] = "";
 
     // res.writeRes(res1,1024);
@@ -128,6 +133,6 @@ static void *run(void *arg)
 
     // close clientsocket
     // closedir(dirp);
-    close(clientsock);
+    
     return (NULL);
 }

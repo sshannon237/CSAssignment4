@@ -7,7 +7,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <dirent.h>
-#include <iostream>
 
 #include "HttpResponse.hpp"
 void HttpResponse::commitRes() {
@@ -16,8 +15,7 @@ void HttpResponse::commitRes() {
     char inStr[l + 1];
 
     strcpy(inStr, responseStr.c_str());
-
     if (rval = write(clientsocket, inStr, sizeof(inStr)) < 0){
-        perror("writing socket");
+        perror("writing socket\n");
     }
 }
