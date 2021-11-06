@@ -9,6 +9,7 @@
 #include <dirent.h>
 #include <string>
 #include <sstream>
+#include <vector>
 #include <iostream>
 #include "HttpRequest.hpp"
 
@@ -17,19 +18,58 @@ HttpRequest::HttpRequest(int &cs) : clientsocket(cs)
 {
     string header = readHeader();
     // cout << header << endl;
-    if (header.find("GET / ") != string::npos) {
-        method = "GET";
+    method = findMethod(header);
+    if(method == "POST") {
+        bodyLength = findContentLength(header);
+        boundary = findBoundary(header);
+        readBody();
     }
-    else if (header.find("POST") != string::npos) {
-        method = "POST";
-        stringstream ss(header);
-        string headerLine;
-        while (getline(ss, headerLine)) {
-            if (headerLine.find("Content-Length") != string::npos) {
-                cout << headerLine << endl;
-            }
+}
+
+string HttpRequest::findLine(string target, string header) {
+    stringstream ss(header);
+    string headerLine;
+    while (getline(ss, headerLine)) {
+        if (headerLine.find(target) != string::npos) {
+            return headerLine;
         }
     }
+    return "";
+}
+
+int HttpRequest::findContentLength(string header) {
+    int cl = 0;
+    string contentLengthLine = findLine("Content-Length", header);
+    stringstream clss(contentLengthLine);
+    string temp;
+    while(!clss.eof()) {
+        clss >> temp;
+        if(stringstream(temp) >> cl) {
+            break;
+        }
+
+    }
+    return cl;
+}
+
+string HttpRequest::findBoundary(string header) {
+    string boundaryLine;
+    if((boundaryLine = findLine("Content-Type", header)) != ""){
+        return boundaryLine.substr(boundaryLine.find("boundary=") + 9);
+    }
+    return "";
+}
+
+string HttpRequest::findMethod(string header) {
+    if (header.find("GET / ") != string::npos) {
+        return "GET";
+    } else if (header.find("POST") != string::npos) {
+        return "POST";
+    }
+    return "";
+    // else if (header.find("CUSTOMCLIENT") != string::npos) {
+    //     // handle custom client reading.
+    // }
 }
 string HttpRequest::readHeader() {
     int rval;
@@ -43,4 +83,15 @@ string HttpRequest::readHeader() {
         header += byte[0];
     }
     return header;
+}
+
+void HttpRequest::readBody() {
+    int rval;
+    char bodyArr[bodyLength];
+    if ((rval = read(clientsocket, bodyArr, bodyLength)) < 0) {
+        perror("reading socket");
+    }
+    for(char byte : bodyArr) {
+        body.push_back(byte);
+    }
 }
