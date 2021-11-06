@@ -1,6 +1,10 @@
 #include <string>
+#include <iostream>
+#include <filesystem>
 
 #include "FileUploadServlet.hpp"
+
+namespace fs = std::filesystem;
 
 void FileUploadServlet::doGet(HttpRequest request, HttpResponse response) {
 
@@ -14,11 +18,20 @@ void FileUploadServlet::doGet(HttpRequest request, HttpResponse response) {
 
 void FileUploadServlet::doPost(HttpRequest request, HttpResponse response) {
 
+    std::string path = "C:\\cygwin64\\home\\CSAssignment4";
+    string files {""};
+    for (const auto & entry : fs::directory_iterator(path))
+        s += "<li>" + entry.path().u8string() + "</li>";
+//        cout << entry.path() << endl;
+
     printf("Lets Get this Post\n");
     response.addRes("HTTP/1.1 200 OK\r\n");
     response.addRes("Content-Type: text/html\r\n\r\n");
+
     string topPart = "<!DOCTYPE html><html><body><ul>";
     string bottomPart = "</ul></body></html>";
-    response.addRes(topPart + "<li>Posted</li>" + bottomPart);
-    response.commitRes();   
+
+//    response.addRes(topPart + "<li>Posted</li>" + bottomPart);
+    response.addRes(topPart + s + bottomPart);
+    response.commitRes();
 }
