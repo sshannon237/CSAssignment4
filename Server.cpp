@@ -40,8 +40,7 @@ main()
     listen(sock, 5);
     while (1) {
         msgsock = accept(sock, (struct sockaddr *)0, (socklen_t *)0);
-        if (msgsock == -1)
-        {
+        if (msgsock == -1) {
             perror("accept");
         }
         // Create thread

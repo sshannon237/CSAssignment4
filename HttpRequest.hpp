@@ -18,4 +18,6 @@ private:
 public:
     HttpRequest(int& cs);
     string getMethod() {return method;};
+    string getBoundary() {return boundary;};
+    vector<char> getBody() {return body;};
 };

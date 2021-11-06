@@ -54,8 +54,10 @@ int HttpRequest::findContentLength(string header) {
 
 string HttpRequest::findBoundary(string header) {
     string boundaryLine;
-    if((boundaryLine = findLine("Content-Type", header)) != ""){
-        return boundaryLine.substr(boundaryLine.find("boundary=") + 9);
+    if((boundaryLine = findLine("Content-Type", header)) != "") {
+        string boundary = boundaryLine.substr(boundaryLine.find("boundary=") + 9);
+        boundary.pop_back();
+        return boundary;
     }
     return "";
 }
