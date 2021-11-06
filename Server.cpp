@@ -68,7 +68,6 @@ static void *run(void *arg) {
 
     // DIR *dirp;
     // struct direct *d;
-    char reqType[102400];
     // open socket
     int rval;
     int clientsock;
@@ -83,17 +82,13 @@ static void *run(void *arg) {
 
     // Read first x bits to figure out if get request or post request
 
-    req.readReq(reqType, 102400);
-
-    string reqTypeStr(reqType);
-
     FileUploadServlet servlet = FileUploadServlet();
 
-    if (reqTypeStr.find("GET / ") != string::npos)
+    if (req.getMethod() == "GET")
     {
         // printf("Calling get\n");
         servlet.doGet(req, res);
-    } else if (reqTypeStr.find("POST") != string::npos)
+    } else if (req.getMethod() == "POST")
     {
         // printf("Calling post\n");
         servlet.doPost(req, res);
