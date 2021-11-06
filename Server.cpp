@@ -8,13 +8,15 @@
 #include <string.h>
 #include <dirent.h>
 #include <string>
-
+#include "InvalidRequestException.hpp"
+#include <iostream>
 #include "HttpRequest.hpp"
 #include "HttpResponse.hpp"
 // #include "Servlet.hpp"
 #include "FileUploadServlet.hpp"
 using namespace std;
 static void *run(void *);
+
 main()
 {
     // set up socket to listen, then create a thread
@@ -89,6 +91,7 @@ static void *run(void *arg) {
 
     FileUploadServlet servlet = FileUploadServlet();
 
+    // TODO Implement InvalidRequestException here
     if (reqTypeStr.find("GET / ") != string::npos)
     {
         // printf("Calling get\n");

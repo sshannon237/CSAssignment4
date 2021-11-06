@@ -1,7 +1,6 @@
 #include <string>
 #include <iostream>
 #include <filesystem>
-
 #include "FileUploadServlet.hpp"
 
 namespace fs = std::filesystem;
@@ -26,16 +25,14 @@ void FileUploadServlet::doPost(HttpRequest request, HttpResponse response) {
     /*
      * Gets file path to the "images" folder, then write the name of each file into a string of list items
      */
-    std::string path = fs::current_path().u8string() + "/images";
-    string files {""};
-    for (const auto & entry : fs::directory_iterator(path)) {
-        string filePath {entry.path().u8string()};
-        // Find the images folder, then offset the string by the length of the folder name
-        string fileName {filePath.substr(filePath.find("/images/") + 8)};
-        files += "<li>" + fileName + "</li>";
-    }
-
-
+        string path = fs::current_path().u8string() + "/images";
+        string files{""};
+        for (const auto &entry: fs::directory_iterator(path)) {
+            string filePath{entry.path().u8string()};
+            // Find the images folder, then offset the string by the length of the folder name
+            string fileName{filePath.substr(filePath.find("/images/") + 8)};
+            files += "<li>" + fileName + "</li>";
+        }
     printf("Lets Get this Post\n");
     response.addRes("HTTP/1.1 200 OK\r\n");
     response.addRes("Content-Type: text/html\r\n\r\n");
