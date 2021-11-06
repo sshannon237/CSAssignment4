@@ -18,11 +18,16 @@ void FileUploadServlet::doGet(HttpRequest request, HttpResponse response) {
 
 void FileUploadServlet::doPost(HttpRequest request, HttpResponse response) {
 
-    std::string path = "C:\\cygwin64\\home\\CSAssignment4";
+    std::string path = fs::current_path().u8string() + "/images";
     string files {""};
-    for (const auto & entry : fs::directory_iterator(path))
-        s += "<li>" + entry.path().u8string() + "</li>";
+    for (const auto & entry : fs::directory_iterator(path)) {
+        string filePath {entry.path().u8string()};
+        string fileName {filePath.substr(filePath.find("/images/") + 8)};
+        files += "<li>" + fileName + "</li>";
+//        files += "<li>" + entry.path().u8string() + "</li>";
 //        cout << entry.path() << endl;
+    }
+
 
     printf("Lets Get this Post\n");
     response.addRes("HTTP/1.1 200 OK\r\n");
@@ -32,6 +37,6 @@ void FileUploadServlet::doPost(HttpRequest request, HttpResponse response) {
     string bottomPart = "</ul></body></html>";
 
 //    response.addRes(topPart + "<li>Posted</li>" + bottomPart);
-    response.addRes(topPart + s + bottomPart);
+    response.addRes(topPart + files + bottomPart);
     response.commitRes();
 }
