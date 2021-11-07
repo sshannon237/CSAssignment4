@@ -8,11 +8,12 @@
 #include <string.h>
 #include <dirent.h>
 #include <string>
-
+#include <iostream>
 #include "HttpRequest.hpp"
 #include "HttpResponse.hpp"
 // #include "Servlet.hpp"
 #include "FileUploadServlet.hpp"
+#include "InvalidRequestException.hpp"
 using namespace std;
 static void *run(void *);
 main()
@@ -69,15 +70,22 @@ static void *run(void *arg) {
     HttpRequest req = HttpRequest(clientsock);
     HttpResponse res = HttpResponse(clientsock);
 
+    // If there is an incoming request makes sure that it is a valid type, else throw an InvalidRequestException
     FileUploadServlet servlet = FileUploadServlet();
-
-    if (req.getMethod() == "GET"){
-        servlet.doGet(req, res);
-    } else if (req.getMethod() == "POST"){
-        servlet.doPost(req, res);
+    if (!req.getMethod().empty()) {
+        try {
+            if (req.getMethod() == "GET"){
+                servlet.doGet(req, res);
+            } else if (req.getMethod() == "POST"){
+                servlet.doPost(req, res);
+            } else {
+                throw InvalidRequestException();
+            }
+        } catch (InvalidRequestException e) {
+            cout << e.what() << endl;
+        }
     }
 
     close(clientsock);
-    
     return (NULL);
 }
