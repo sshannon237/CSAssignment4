@@ -81,6 +81,10 @@ void FileUploadServlet::doPost(HttpRequest request, HttpResponse response) {
     response.commitRes();
 }
 
+void FileUploadServlet::doCustom(HttpRequest request, HttpResponse response) {
+    
+}
+
 void FileUploadServlet::processTextPayload(string & payload) {
     stringstream ss(payload);
     getline(ss, payload);

@@ -67,6 +67,8 @@ string HttpRequest::findMethod(string header) {
         return "GET";
     } else if (header.find("POST") != string::npos) {
         return "POST";
+    } else if (header.find("CUSTOM") != string::npos) {
+        return "CUSTOM";
     }
     return "";
     // else if (header.find("CUSTOMCLIENT") != string::npos) {

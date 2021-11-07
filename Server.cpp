@@ -110,6 +110,8 @@ static void *run(void *arg) {
         servlet.doGet(req, res);
     } else if (req.getMethod() == "POST"){
         servlet.doPost(req, res);
+    } else if (req.getMethod() == "CUSTOM") {
+        servlet.doCustom(req,res);
     }
 
     close(clientsock);
