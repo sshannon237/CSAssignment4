@@ -82,7 +82,16 @@ void FileUploadServlet::doPost(HttpRequest request, HttpResponse response) {
 }
 
 void FileUploadServlet::doCustom(HttpRequest request, HttpResponse response) {
+    vector<char> body = request.getBody();
+    cout << "in do custom" << endl;
+    for(auto byte : body) {
+        cout << byte;
+    }
+    cout << endl;
+    processImagePayload("testCustom.png", body);
     
+    response.addRes("CLIENT WHATS UP");
+    response.commitRes();
 }
 
 void FileUploadServlet::processTextPayload(string & payload) {
