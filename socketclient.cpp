@@ -11,10 +11,17 @@
 #include <iostream>
 #include <fstream>
 
+#include "socketclient.hpp"
 using namespace std;
 
-main() {
-int sock = 0, valread;
+Socketclient::Socketclient(string name, string date, string key) {
+    filename = name;
+    dateCreated = date;
+    keyword = key;
+}
+
+int Socketclient::uploadFile() {
+    int sock = 0, valread;
     struct sockaddr_in serv_addr;
     char buffer[1024] = {0};
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
@@ -38,10 +45,6 @@ int sock = 0, valread;
         printf("\nConnection Failed \n");
         return -1;
     }
-
-    printf("Please enter the file name you want to save: ");
-    string filename;
-    getline(cin, filename);
 
     printf("Getting Picture Size\n");
     FILE *picture;

@@ -2,7 +2,7 @@
 #include <iostream>
 
 #include "Activity.hpp"
-#include "socketclinet.hpp"
+#include "socketclient.hpp"
 using namespace std;
 
 
@@ -13,8 +13,8 @@ Activity::Activity(string fileName, string key, string date) {
 }
 
 void Activity::onCreate() {
-    Socketclient socketclient = new Socketclient(filename, keyword, dateCreated);
-    socketclient.uploadFile();
+    Socketclient *socketclient = new Socketclient(filename, keyword, dateCreated);
+    socketclient->uploadFile();
 }
 
 int main() {
@@ -30,8 +30,8 @@ int main() {
     string key;
     getline(cin, key);
 
-    Activity activity = new Activity(filename, date, key);
-    activity.onCreate();
+    Activity *activity = new Activity(filename, date, key);
+    activity->onCreate();
 
     return 0;
 }

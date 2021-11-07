@@ -21,5 +21,5 @@ private:
     string keyword;
 public:
     Socketclient(string, string, string);
-    void uploadFile();
+    int uploadFile();
 };

@@ -132,7 +132,7 @@ static void *run(void *arg) {
     {
         // printf("Calling post\n");
         servlet.doPost(req, res);
-    }
+    } 
 
     close(clientsock);
     printf("In Thread\n");
