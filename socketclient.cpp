@@ -54,18 +54,24 @@ int Socketclient::uploadFile() {
     size = ftell(picture);
     fseek(picture, 0, SEEK_SET);
 
-    //Send Picture Size
-    write(sock, &size, sizeof(size));
+    string requestHeaderTop = "CUSTOM\r\nContent-Length: ";
+    string requestHeaderBottom = "\r\n\r\n";
+    string requestHeader = requestHeaderTop + to_string(size);
+    requestHeader += requestHeaderBottom;
+    int headerNumOfBytes = 28 + to_string(size).length();
+
+    //Send Header
+    write(sock, requestHeader.c_str(), headerNumOfBytes);
     printf("Picture Size Sent\n");
 
     //Send Picture as Byte Array
-    printf("Sending Picture as Byte Array\n");
-    char send_buffer[size];
-    while(!feof(picture)) {
-        fread(send_buffer, 1, sizeof(send_buffer), picture);
-        write(sock, send_buffer, sizeof(send_buffer));
-        bzero(send_buffer, sizeof(send_buffer));
-    }
+    // printf("Sending Picture as Byte Array\n");
+    // char send_buffer[size];
+    // while(!feof(picture)) {
+    //     fread(send_buffer, 1, sizeof(send_buffer), picture);
+    //     write(sock, send_buffer, sizeof(send_buffer));
+    //     bzero(send_buffer, sizeof(send_buffer));
+    // }
 
     return 0;
 }

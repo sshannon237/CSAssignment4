@@ -14,14 +14,17 @@
 #include "HttpRequest.hpp"
 
 using namespace std;
-HttpRequest::HttpRequest(int &cs) : clientsocket(cs)
-{
+HttpRequest::HttpRequest(int &cs) : clientsocket(cs){
     string header = readHeader();
-    // cout << header << endl;
+    cout << header << endl;
     method = findMethod(header);
     if(method == "POST") {
         bodyLength = findContentLength(header);
         boundary = findBoundary(header);
+        readBody();
+    }
+    if(method == "CUSTOM") {
+        bodyLength = findContentLength(header);
         readBody();
     }
 }
@@ -67,15 +70,14 @@ string HttpRequest::findMethod(string header) {
         return "GET";
     } else if (header.find("POST") != string::npos) {
         return "POST";
-    } else if (header.find("CUSTOM") != string::npos) {
+    }else if (header.find("CUSTOM") != string::npos) {
         return "CUSTOM";
     }
     return "";
-    // else if (header.find("CUSTOMCLIENT") != string::npos) {
-    //     // handle custom client reading.
-    // }
+    // 
 }
 string HttpRequest::readHeader() {
+    // CUSTOM\r\nContent-Length: 8908\r\n\r\n
     int rval;
     int bytesRead = 0;
     char byte[1];
