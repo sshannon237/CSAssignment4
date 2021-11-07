@@ -20,6 +20,11 @@ main()
     // set up socket to listen, then create a thread
     int sock, length;
     struct sockaddr_in server;
+    int addrlen = sizeof(server);
+    int new_socket;
+    char *hello = "Hello From Server";
+    int valread;
+    char buffer[1024] = {0};
     int msgsock;
     int i;
     pthread_t tid;
@@ -38,6 +43,36 @@ main()
         perror("binding stream socket");
     }
     listen(sock, 5);
+
+    if ((new_socket = accept(sock, (struct sockaddr *)&server, 
+                       (socklen_t*)&addrlen))<0)
+    {
+        perror("accept");
+        exit(EXIT_FAILURE);
+    }
+
+    //Read Picture Size
+    printf("Reading Picture Size\n");
+    int size;
+    read(new_socket, &size, sizeof(int));
+    
+    // Read Picture Byte Array
+    printf("Reading Picture Byte Array\n");
+    char p_array[size];
+    int bytesRead = 0;
+    int result;
+    while (bytesRead < size) {
+        result = read(new_socket, p_array + bytesRead, size - bytesRead);
+        bytesRead += result;
+    }
+
+    //Convert it Back into Picture
+    printf("Converting Byte Array to Picture\n");
+    FILE *image;
+    image = fopen("images/c1.png", "wb");
+    fwrite(p_array, 1, sizeof(p_array), image);
+    fclose(image);
+
     while (1) {
         msgsock = accept(sock, (struct sockaddr *)0, (socklen_t *)0);
         if (msgsock == -1)
