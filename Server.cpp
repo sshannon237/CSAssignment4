@@ -75,14 +75,11 @@ main()
 
     while (1) {
         msgsock = accept(sock, (struct sockaddr *)0, (socklen_t *)0);
-        if (msgsock == -1)
-        {
+        if (msgsock == -1) {
             perror("accept");
         }
         // Create thread
-        printf("Before Thread\n");
         pthread_create(&tid, NULL, run, (void *)msgsock);
-        printf("After Thread\n");
         
     }
     
@@ -101,72 +98,23 @@ main()
 // 4. call doGet or doPost
 static void *run(void *arg) {
 
-    // DIR *dirp;
-    // struct direct *d;
-    char reqType[102400];
-    // open socket
     int rval;
     int clientsock;
     clientsock = (long long)(arg);
     HttpRequest req = HttpRequest(clientsock);
     HttpResponse res = HttpResponse(clientsock);
-    /* pthread_detach(pthread_self());*/
-    // Reads socket - will be associated with HttpRequest class
-    // if ((rval = read(clientsock, buf1, 80)) < 0){
-    //     perror("reading socket");
-    // }
-
-    // Read first x bits to figure out if get request or post request
-
-    req.readReq(reqType, 102400);
-
-    string reqTypeStr(reqType);
 
     FileUploadServlet servlet = FileUploadServlet();
 
-    if (reqTypeStr.find("GET / ") != string::npos)
-    {
-        // printf("Calling get\n");
+    if (req.getMethod() == "GET"){
         servlet.doGet(req, res);
-    } else if (reqTypeStr.find("POST") != string::npos)
-    {
-        // printf("Calling post\n");
+    } else if (req.getMethod() == "POST"){
         servlet.doPost(req, res);
-    } 
+    } else if (req.getMethod() == "CUSTOM") {
+        servlet.doCustom(req,res);
+    }
 
     close(clientsock);
-    printf("In Thread\n");
-    // char res3[] = "";
-
-    // res.writeRes(res1,1024);
-    // res.writeRes(res2,1024);
-    // res.writeRes(res3,1024);
-
-    //call doGet or doPost
-
-    // Prints HttpRequest. This will be logic that is in the doGet method.
-
-    // This opens a directory for responding to a client (doPost type things)
-    // dirp = opendir(buf1);
-    // if (dirp == NULL) {
-    //     perror("openning dir");
-    //     return (NULL);
-    // }
-    // buf2[0] = '\0';
-
-    // This writes to the socket. This will associated with HttpResponce class
-    // while (d = readdir(dirp)) {
-    //     strcpy(buf2,d->d_name);
-    // res.writeRes(buf2,1024);
-    // if ((rval = write(clientsock, res1, 1024)) < 0)
-    // {
-    //     perror("writing socket");
-    // }
-
-    // }
-
-    // close clientsocket
-    // closedir(dirp);
     
     return (NULL);
 }
