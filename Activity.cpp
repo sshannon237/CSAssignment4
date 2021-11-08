@@ -22,7 +22,7 @@ int main() {
     string filename;
     getline(cin, filename);
 
-    printf("Please enter the date created: yyyy/mm/dd\n");
+    printf("Please enter the date created: yyyy-mm-dd\n");
     string date;
     getline(cin, date);
 
