@@ -3,9 +3,11 @@
 #include <fstream>
 #include <sstream>
 #include <filesystem>
+#include "json.hpp"
 
 #include "FileUploadServlet.hpp"
 
+using json = nlohmann::json;
 namespace fs = std::filesystem;
 void FileUploadServlet::doGet(HttpRequest request, HttpResponse response) {
 
@@ -89,8 +91,18 @@ void FileUploadServlet::doCustom(HttpRequest request, HttpResponse response) {
     }
     cout << endl;
     processImagePayload("testCustom.png", body);
-    
-    response.addRes("CLIENT WHATS UP");
+
+    // Create JSON with directory
+    json images{};
+    std::string path = fs::current_path().u8string() + "/images";
+    for (const auto &entry : fs::directory_iterator(path)) {
+        string filePath {entry.path().u8string()};
+        string fileName {filePath.substr(filePath.find("/images/") + 8)};
+        images.push_back(fileName);
+    }
+    const auto s = images.dump();
+    cout << images << endl;
+    response.addRes(s);
     response.commitRes();
 }
 

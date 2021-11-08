@@ -24,6 +24,7 @@ int Socketclient::uploadFile() {
     int sock = 0, valread;
     struct sockaddr_in serv_addr;
     char buffer[1024] = {0};
+    int rval;
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
     {
         printf("\n Socket creation error \n");
@@ -72,6 +73,6 @@ int Socketclient::uploadFile() {
     //     write(sock, send_buffer, sizeof(send_buffer));
     //     bzero(send_buffer, sizeof(send_buffer));
     // }
-
     return 0;
 }
+
