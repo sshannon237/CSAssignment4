@@ -20,6 +20,10 @@ void Activity::onCreate() {
     socketclient->uploadFile();
 }
 
+// displays the directory, incorrect way to do it
+// we want this to handle the JSON response from the server and then output.
+// ideally this should be in the doCustom method in the FileUploadServlet and
+// we parse and print it here.
 void Activity::showDirectory() {
     json images{};
     std::string path = fs::current_path().u8string() + "/images";
