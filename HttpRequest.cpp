@@ -17,7 +17,6 @@ using namespace std;
 HttpRequest::HttpRequest(int &cs) : clientsocket(cs){
     string header = readHeader();
     method = findMethod(header);
-    cout << header << endl;
     if(method == "POST") {
         bodyLength = findContentLength(header);
         boundary = findBoundary(header);
@@ -104,9 +103,13 @@ string HttpRequest::readHeader() {
 
 void HttpRequest::readBody() {
     int rval;
+    cout << "reading body" << endl;
     char bodyArr[bodyLength];
-    if ((rval = read(clientsocket, bodyArr, bodyLength)) < 0) {
-        perror("reading socket");
+    int bytesread = 0;
+    while (bytesread < bodyLength) {
+        cout << bytesread << endl;
+        rval = read(clientsocket, bodyArr + bytesread, bodyLength - bytesread);
+        bytesread += rval;
     }
     for(char byte : bodyArr) {
         body.push_back(byte);

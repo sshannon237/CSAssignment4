@@ -9,6 +9,8 @@
 using namespace std;
 
 namespace fs = std::filesystem;
+
+// Handles GET HTTP requests
 void FileUploadServlet::doGet(HttpRequest request, HttpResponse response) {
 
     response.addRes("HTTP/1.1 200 OK\r\n");
@@ -32,7 +34,7 @@ void FileUploadServlet::doPost(HttpRequest request, HttpResponse response) {
     string caption;
     string date;
     vector<char> body = request.getBody();
-    for(char byte : body) {
+    for(auto byte : body) {
         section += byte;
         if (sectionHeader.find("\r\n\r\n") != string::npos) {
             if(section.find("\"fileName\"") != string::npos) {
@@ -83,6 +85,8 @@ void FileUploadServlet::doPost(HttpRequest request, HttpResponse response) {
     response.commitRes();
 }
 
+
+// Handles data coming from the custom client
 void FileUploadServlet::doCustom(HttpRequest request, HttpResponse response) { 
     //Read Picture Size
     printf("Reading Picture Size\n");

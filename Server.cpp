@@ -19,15 +19,10 @@ static void *run(void *);
 main()
 {
     // set up socket to listen, then create a thread
-    int sock, length;
+    int sock;
     struct sockaddr_in server;
-    int addrlen = sizeof(server);
-    int new_socket;
-    char *hello = "Hello From Server";
     int valread;
-    char buffer[1024] = {0};
     int msgsock;
-    int i;
     pthread_t tid;
 
     sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -58,21 +53,14 @@ main()
     return 0;
 }
 
-// This is the run class. I think we can get away with just leaving this in Server.cpp
-// instead of putting it in ServerThread.cpp(We would delete ServerThread.cpp in this case)
-
-// Finished run method will look something like this:
-//
-// 1. open socket
-// 2. create httpresponce/httprequest classes which will take in the socket and have
-// methods for reading/writing to socket
-// 3. parse the beginning of the request to find out if get or post request
-// 4. call doGet or doPost
+// Called when thread is created
 static void *run(void *arg) {
 
     int rval;
     int clientsock;
     clientsock = (long long)(arg);
+
+    // Data from socket is parsed when HttpRequest is constructed
     HttpRequest req = HttpRequest(clientsock);
     HttpResponse res = HttpResponse(clientsock);
 
