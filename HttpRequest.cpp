@@ -14,16 +14,31 @@
 #include "HttpRequest.hpp"
 
 using namespace std;
-HttpRequest::HttpRequest(int &cs) : clientsocket(cs)
-{
+HttpRequest::HttpRequest(int &cs) : clientsocket(cs){
     string header = readHeader();
-    // cout << header << endl;
     method = findMethod(header);
+    cout << header << endl;
     if(method == "POST") {
         bodyLength = findContentLength(header);
         boundary = findBoundary(header);
         readBody();
     }
+    if(method == "CUSTOM") {
+        vector<string> multipledata = getData(header);
+        filename = multipledata.at(2);
+        dateCreated = multipledata.at(3);
+        keyword = multipledata.at(4);
+    }
+}
+
+vector<string> HttpRequest::getData(string header) {
+    vector<string> multipledata;
+    stringstream ss(header);
+    string data;
+    while (getline(ss, data)) {
+        multipledata.push_back(data);
+    }
+    return multipledata;
 }
 
 string HttpRequest::findLine(string target, string header) {
@@ -67,11 +82,11 @@ string HttpRequest::findMethod(string header) {
         return "GET";
     } else if (header.find("POST") != string::npos) {
         return "POST";
+    }else if (header.find("CUSTOM") != string::npos) {
+        return "CUSTOM";
     }
     return "";
-    // else if (header.find("CUSTOMCLIENT") != string::npos) {
-    //     // handle custom client reading.
-    // }
+    // 
 }
 string HttpRequest::readHeader() {
     int rval;

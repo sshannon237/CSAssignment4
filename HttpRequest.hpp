@@ -3,8 +3,12 @@
 #include <string>
 using namespace std;
 class HttpRequest {
-private:
+public:
     int clientsocket;
+    string filename;
+    string dateCreated;
+    string keyword;
+private:
     int bodyLength;
     vector<char> body;
     string boundary;
@@ -15,6 +19,7 @@ private:
     string findMethod(string);
     int findContentLength(string);
     string findBoundary(string);
+    vector<string> getData(string);
 public:
     HttpRequest(int& cs);
     string getMethod() {return method;};

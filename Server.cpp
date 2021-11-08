@@ -21,6 +21,11 @@ main()
     // set up socket to listen, then create a thread
     int sock, length;
     struct sockaddr_in server;
+    int addrlen = sizeof(server);
+    int new_socket;
+    char *hello = "Hello From Server";
+    int valread;
+    char buffer[1024] = {0};
     int msgsock;
     int i;
     pthread_t tid;
@@ -39,6 +44,7 @@ main()
         perror("binding stream socket");
     }
     listen(sock, 5);
+
     while (1) {
         msgsock = accept(sock, (struct sockaddr *)0, (socklen_t *)0);
         if (msgsock == -1) {
@@ -78,6 +84,8 @@ static void *run(void *arg) {
                 servlet.doGet(req, res);
             } else if (req.getMethod() == "POST"){
                 servlet.doPost(req, res);
+            } else if (req.getMethod() == "CUSTOM") {
+                servlet.doCustom(req,res);
             } else {
                 throw InvalidRequestException();
             }
