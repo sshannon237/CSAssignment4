@@ -46,32 +46,42 @@ int Socketclient::uploadFile() {
         return -1;
     }
 
-    printf("Getting Picture Size\n");
     FILE *picture;
     picture = fopen(filename.c_str(), "rb");
-    int size;
-    fseek(picture, 0, SEEK_END);
-    size = ftell(picture);
-    fseek(picture, 0, SEEK_SET);
+    if (!picture) {
+        printf("There is no such file!");
+    } else {
+        // Get the size of an image
+        printf("Getting Picture Size\n");
+        int size;
+        fseek(picture, 0, SEEK_END);
+        size = ftell(picture);
+        fseek(picture, 0, SEEK_SET);
 
-    string requestHeaderTop = "CUSTOM\r\nContent-Length: ";
-    string requestHeaderBottom = "\r\n\r\n";
-    string requestHeader = requestHeaderTop + to_string(size);
-    requestHeader += requestHeaderBottom;
-    int headerNumOfBytes = 28 + to_string(size).length();
+        // Create a custom request that is different from usual http request
+        string requestHeader = "CUSTOM\nContent-Length: " + to_string(size) + "\n";
+        requestHeader += filename + "\n";
+        requestHeader += dateCreated + "\n";
+        requestHeader += keyword + "\n\r\n\r\n";
+        int headerNumOfBytes = 31 + to_string(size).length() + filename.length() + dateCreated.length() + keyword.length();
 
-    //Send Header
-    write(sock, requestHeader.c_str(), headerNumOfBytes);
-    printf("Picture Size Sent\n");
+        //Send Header
+        printf("Sending Header...\n");
+        write(sock, requestHeader.c_str(), headerNumOfBytes);
 
-    //Send Picture as Byte Array
-    // printf("Sending Picture as Byte Array\n");
-    // char send_buffer[size];
-    // while(!feof(picture)) {
-    //     fread(send_buffer, 1, sizeof(send_buffer), picture);
-    //     write(sock, send_buffer, sizeof(send_buffer));
-    //     bzero(send_buffer, sizeof(send_buffer));
-    // }
+        // Send size
+        printf("Sending Picture size...\n");
+        write(sock, &size, sizeof(size));
+        
+        // Send Picture as Byte Array
+        printf("Sending Picture as Byte Array...\n");
+        char send_buffer[size];
+        while(!feof(picture)) {
+            fread(send_buffer, 1, sizeof(send_buffer), picture);
+            write(sock, send_buffer, sizeof(send_buffer));
+            bzero(send_buffer, sizeof(send_buffer));
+        }
+    }
 
     return 0;
 }

@@ -3,8 +3,10 @@
 #include <fstream>
 #include <sstream>
 #include <filesystem>
-
+#include <unistd.h>
 #include "FileUploadServlet.hpp"
+
+using namespace std;
 
 namespace fs = std::filesystem;
 void FileUploadServlet::doGet(HttpRequest request, HttpResponse response) {
@@ -81,8 +83,31 @@ void FileUploadServlet::doPost(HttpRequest request, HttpResponse response) {
     response.commitRes();
 }
 
-void FileUploadServlet::doCustom(HttpRequest request, HttpResponse response) {
+void FileUploadServlet::doCustom(HttpRequest request, HttpResponse response) { 
+    //Read Picture Size
+    printf("Reading Picture Size\n");
+    int size;
+    read(request.clientsocket, &size, sizeof(int));
+    printf("%d\n", size);
     
+    // Read Picture Byte Array
+    printf("Reading Picture Byte Array\n");
+    char p_array[size];
+    int bytesRead = 0;
+    int result;
+    while (bytesRead < size) {
+        result = read(request.clientsocket, p_array + bytesRead, size - bytesRead);
+        bytesRead += result;
+    }
+
+    string finalFileName = "images/" + request.dateCreated + "-" + request.keyword + "-" + request.filename;
+
+    //Convert it Back into Picture
+    printf("Converting Byte Array to Picture\n");
+    FILE *image;
+    image = fopen(finalFileName.c_str(), "wb");
+    fwrite(p_array, 1, sizeof(p_array), image);
+    fclose(image);
 }
 
 void FileUploadServlet::processTextPayload(string & payload) {
