@@ -12,4 +12,5 @@ private:
 public:
     Activity(string, string, string);
     void onCreate();
+    void showDirectory();
 };

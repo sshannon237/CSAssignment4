@@ -1,10 +1,13 @@
 #include <string>
 #include <iostream>
+#include "json.hpp"
 
 #include "Activity.hpp"
 #include "socketclient.hpp"
 using namespace std;
 
+using json = nlohmann::json;
+namespace fs = std::filesystem;
 
 Activity::Activity(string fileName, string key, string date) {
     filename = fileName;
@@ -15,6 +18,17 @@ Activity::Activity(string fileName, string key, string date) {
 void Activity::onCreate() {
     Socketclient *socketclient = new Socketclient(filename, keyword, dateCreated);
     socketclient->uploadFile();
+}
+
+void Activity::showDirectory() {
+    json images{};
+    std::string path = fs::current_path().u8string() + "/images";
+    for (const auto &entry : fs::directory_iterator(path)) {
+        string filePath {entry.path().u8string()};
+        string fileName {filePath.substr(filePath.find("/images/") + 8)};
+        images.push_back(fileName);
+    }
+    cout << images << endl;
 }
 
 int main() {
@@ -32,6 +46,7 @@ int main() {
 
     Activity *activity = new Activity(filename, date, key);
     activity->onCreate();
+    activity->showDirectory();
 
     return 0;
 }
