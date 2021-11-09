@@ -20,24 +20,28 @@ Jimun Jang
 2. Sending images over native console client to server
 3. Fixed major bug with oversized images in buffer
 4. Create and handle custom requests to the server
+5. General testing
 
 Sam Shannon
 1. Browser client
 2. Sending images over http to server
 3. Create and handle HTTP get and POST request to server
 4. Implement multithreading for server to handle multiple requests
+5. General testing
 
 Christopher Spooner
 1. Created POST request directory logic to display directory info to HTML
 2. Fix bug where writing to client console was not working
 3. Create custom exception and implement in server
 4. Refactor and comment code, create readme.
+5. General testing
 
 Bryan Xing
 1. Created POST request directory logic to display directory info to client console
 2. Fix bug where writing to client console was not working
 3. JSON conversion logic
 4. Pair programming with Jimun to build client application
+5. General testing
 
 Keegan Maundrell
 N/A
