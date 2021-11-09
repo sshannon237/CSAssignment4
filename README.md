@@ -40,5 +40,9 @@ Bryan Xing
 4. Pair programming with Jimun to build client application
 
 Keegan Maundrell
-1. tbd
+N/A
 
+##Notes
+1. Custom exception implemented
+2. Multithreading implemented
+3. All file type uploads supported
