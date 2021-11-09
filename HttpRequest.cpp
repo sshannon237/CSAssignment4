@@ -16,7 +16,6 @@
 using namespace std;
 HttpRequest::HttpRequest(int &cs) : clientsocket(cs){
     string header = readHeader();
-    cout << header << endl;
     method = findMethod(header);
     if(method == "POST") {
         bodyLength = findContentLength(header);
@@ -24,9 +23,21 @@ HttpRequest::HttpRequest(int &cs) : clientsocket(cs){
         readBody();
     }
     if(method == "CUSTOM") {
-        bodyLength = findContentLength(header);
-        readBody();
+        vector<string> multipledata = getData(header);
+        filename = multipledata.at(2);
+        dateCreated = multipledata.at(3);
+        keyword = multipledata.at(4);
     }
+}
+
+vector<string> HttpRequest::getData(string header) {
+    vector<string> multipledata;
+    stringstream ss(header);
+    string data;
+    while (getline(ss, data)) {
+        multipledata.push_back(data);
+    }
+    return multipledata;
 }
 
 string HttpRequest::findLine(string target, string header) {
@@ -77,7 +88,6 @@ string HttpRequest::findMethod(string header) {
     // 
 }
 string HttpRequest::readHeader() {
-    // CUSTOM\r\nContent-Length: 8908\r\n\r\n
     int rval;
     int bytesRead = 0;
     char byte[1];
@@ -93,9 +103,13 @@ string HttpRequest::readHeader() {
 
 void HttpRequest::readBody() {
     int rval;
+    cout << "reading body" << endl;
     char bodyArr[bodyLength];
-    if ((rval = read(clientsocket, bodyArr, bodyLength)) < 0) {
-        perror("reading socket");
+    int bytesread = 0;
+    while (bytesread < bodyLength) {
+        cout << bytesread << endl;
+        rval = read(clientsocket, bodyArr + bytesread, bodyLength - bytesread);
+        bytesread += rval;
     }
     for(char byte : bodyArr) {
         body.push_back(byte);

@@ -5,10 +5,15 @@
 #include <filesystem>
 #include "json.hpp"
 
+#include <unistd.h>
 #include "FileUploadServlet.hpp"
 
 using json = nlohmann::json;
+using namespace std;
+
 namespace fs = std::filesystem;
+
+// Handles GET HTTP requests
 void FileUploadServlet::doGet(HttpRequest request, HttpResponse response) {
 
     response.addRes("HTTP/1.1 200 OK\r\n");
@@ -32,7 +37,7 @@ void FileUploadServlet::doPost(HttpRequest request, HttpResponse response) {
     string caption;
     string date;
     vector<char> body = request.getBody();
-    for(char byte : body) {
+    for(auto byte : body) {
         section += byte;
         if (sectionHeader.find("\r\n\r\n") != string::npos) {
             if(section.find("\"fileName\"") != string::npos) {
@@ -83,14 +88,33 @@ void FileUploadServlet::doPost(HttpRequest request, HttpResponse response) {
     response.commitRes();
 }
 
+
+// Handles data coming from the custom client
 void FileUploadServlet::doCustom(HttpRequest request, HttpResponse response) {
-    vector<char> body = request.getBody();
-    cout << "in do custom" << endl;
-    for(auto byte : body) {
-        cout << byte;
+    //Read Picture Size
+    printf("Reading Picture Size\n");
+    int size;
+    read(request.clientsocket, &size, sizeof(int));
+    printf("%d\n", size);
+
+    // Read Picture Byte Array
+    printf("Reading Picture Byte Array\n");
+    char p_array[size];
+    int bytesRead = 0;
+    int result;
+    while (bytesRead < size) {
+        result = read(request.clientsocket, p_array + bytesRead, size - bytesRead);
+        bytesRead += result;
     }
-    cout << endl;
-    processImagePayload("testCustom.png", body);
+
+    string finalFileName = "images/" + request.dateCreated + "-" + request.keyword + "-" + request.filename;
+
+    //Convert it Back into Picture
+    printf("Converting Byte Array to Picture\n");
+    FILE *image;
+    image = fopen(finalFileName.c_str(), "wb");
+    fwrite(p_array, 1, sizeof(p_array), image);
+    fclose(image);
 
     // Create JSON with directory
     json images{};
