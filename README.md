@@ -1,8 +1,9 @@
 # CSAssignment4
 
 # To Run
-gcc -o Server Serve.cpp
-./Server.exe
+g++ -o server HttpRequest.hpp HttpRequest.cpp HttpResponse.hpp HttpResponse.cpp Servlet.hpp FileUploadServlet.hpp FileUploadServlet.cpp Server.cpp 
+./server.exe
 
-gcc -o ServerThread.cpp
+g++ -o socketclient socketclient.cpp Activity.cpp
+
 ./ServerThread.exe
