@@ -136,11 +136,9 @@ string HttpRequest::readHeader() {
  */
 void HttpRequest::readBody() {
     int rval;
-    cout << "reading body" << endl;
     char bodyArr[bodyLength];
     int bytesread = 0;
     while (bytesread < bodyLength) {
-        cout << bytesread << endl;
         rval = read(clientsocket, bodyArr + bytesread, bodyLength - bytesread);
         bytesread += rval;
     }

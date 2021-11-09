@@ -73,7 +73,7 @@ static void *run(void *arg) {
     FileUploadServlet servlet = FileUploadServlet();
     if (!req.getMethod().empty()) {
         try {
-            if (req.getMethod() == "GET"){
+            if (req.getMethod() == "GET_INVALID"){
                 servlet.doGet(req, res);
             } else if (req.getMethod() == "POST"){
                 servlet.doPost(req, res);
