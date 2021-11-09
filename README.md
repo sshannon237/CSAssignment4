@@ -12,7 +12,7 @@
    7. Follow the prompts in the console
 3. Access the server through browser
    1. Navigate to localhost:8888 on a web browser
-   2. Fill out the form
+   2. Fill out the form. Any file can be uploaded, not just an image!
 
 ##Work Distribution
 Jimun Jang
