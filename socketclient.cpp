@@ -14,12 +14,22 @@
 #include "socketclient.hpp"
 using namespace std;
 
+/**
+ * Constructs Socketclient
+ * @param name string
+ * @param date string
+ * @param key string
+ */
 Socketclient::Socketclient(string name, string date, string key) {
     filename = name;
     dateCreated = date;
     keyword = key;
 }
 
+/**
+ * Uploads a file to a server's folder.
+ * @return exit code.
+ */
 int Socketclient::uploadFile() {
     int sock = 0, valread;
     struct sockaddr_in serv_addr;
@@ -35,14 +45,12 @@ int Socketclient::uploadFile() {
     serv_addr.sin_port = htons(8888);
        
     // Convert IPv4 and IPv6 addresses from text to binary form
-    if(inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr)<=0) 
-    {
+    if(inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr)<=0) {
         printf("\nInvalid address/ Address not supported \n");
         return -1;
     }
    
-    if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
-    {
+    if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
         printf("\nConnection Failed \n");
         return -1;
     }
@@ -87,6 +95,5 @@ int Socketclient::uploadFile() {
             printf("%s\n", buffer);
         }
     }
-
     return 0;
 }

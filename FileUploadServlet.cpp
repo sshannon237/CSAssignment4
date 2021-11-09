@@ -13,9 +13,12 @@ using namespace std;
 
 namespace fs = std::filesystem;
 
-// Handles GET HTTP requests
+/**
+ * Handles HTTP GET requests by building the html page for browsers.
+ * @param request HttpRequest
+ * @param response HttpResponse
+ */
 void FileUploadServlet::doGet(HttpRequest request, HttpResponse response) {
-
     response.addRes("HTTP/1.1 200 OK\r\n");
     response.addRes("Content-Type: text/html\r\n\r\n");
     string htmlPage = "<!DOCTYPE html><html><head><title>File Upload Form</title></head><body><h1>Upload file</h1><form method=\"POST\" action=\"upload\" enctype=\"multipart/form-data\"><input type=\"file\" name=\"fileName\"/><br/><br/>Caption: <input type=\"text\" name=\"caption\"<br/><br/><br />Date: <input type=\"date\" name=\"date\"<br/><br/><br /><input type=\"submit\" value=\"Submit\"/></form></body></html>";
@@ -36,6 +39,8 @@ void FileUploadServlet::doPost(HttpRequest request, HttpResponse response) {
     string filename;
     string caption;
     string date;
+
+    // Reads header information from POST request and parses values
     vector<char> body = request.getBody();
     for(auto byte : body) {
         section += byte;
@@ -53,6 +58,7 @@ void FileUploadServlet::doPost(HttpRequest request, HttpResponse response) {
             if(section.find("\"date\"") != string::npos) {
                 date.push_back(byte);
             }
+
         } else {
             sectionHeader += byte;
         }
@@ -65,11 +71,7 @@ void FileUploadServlet::doPost(HttpRequest request, HttpResponse response) {
     processTextPayload(date);
     processImagePayload(date + caption + filename, imagePayload);
 
-    
-
-    /*
-     * Gets file path to the "images" folder, then write the name of each file into a string of list items
-     */
+     // Gets file path to the "images" folder, then write the name of each file into a string of list items
     std::string path = fs::current_path().u8string() + "/images";
     string files {""};
     for (const auto & entry : fs::directory_iterator(path)) {
@@ -78,6 +80,8 @@ void FileUploadServlet::doPost(HttpRequest request, HttpResponse response) {
         string fileName {filePath.substr(filePath.find("/images/") + 8)};
         files += "<li>" + fileName + "</li>";
     }
+
+    // Attach values to response and send response to browser.
     response.addRes("HTTP/1.1 200 OK\r\n");
     response.addRes("Content-Type: text/html\r\n\r\n");
 
@@ -89,7 +93,11 @@ void FileUploadServlet::doPost(HttpRequest request, HttpResponse response) {
 }
 
 
-// Handles data coming from the custom client
+/**
+ * Handles data coming from the custom client
+ * @param request HttpRequest
+ * @param response HttpResponse
+ */
 void FileUploadServlet::doCustom(HttpRequest request, HttpResponse response) {
     //Read Picture Size
     printf("Reading Picture Size\n");
@@ -130,12 +138,21 @@ void FileUploadServlet::doCustom(HttpRequest request, HttpResponse response) {
     response.commitRes();
 }
 
+/**
+ * Processes a string for uploads
+ * @param payload string
+ */
 void FileUploadServlet::processTextPayload(string & payload) {
     stringstream ss(payload);
     getline(ss, payload);
     payload.pop_back();
 }
 
+/**
+ * Processes an image for uploads
+ * @param filename string
+ * @param image vector<char>
+ */
 void FileUploadServlet::processImagePayload(string filename, vector<char> image) {
     ofstream of("images/" + filename);
     for(char & byte : image) {
@@ -143,6 +160,11 @@ void FileUploadServlet::processImagePayload(string filename, vector<char> image)
     }
 }
 
+/**
+ * Find filenames from a string stream.
+ * @param sectionHeader header of a POST request
+ * @return filename string
+ */
 string FileUploadServlet::findFilename(string sectionHeader) {
     stringstream ss(sectionHeader);
     string scan;

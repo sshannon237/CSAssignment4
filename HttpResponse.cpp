@@ -9,6 +9,10 @@
 #include <dirent.h>
 
 #include "HttpResponse.hpp"
+
+/**
+ * Writes response data to the socket.
+ */
 void HttpResponse::commitRes() {
     int rval;
     int l = responseStr.length();

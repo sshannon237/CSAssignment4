@@ -15,8 +15,12 @@
 #include "InvalidRequestException.hpp"
 using namespace std;
 static void *run(void *);
-main()
-{
+
+/**
+ * Main server method.
+ * @return exit code int
+ */
+int main() {
     // set up socket to listen, then create a thread
     int sock;
     struct sockaddr_in server;
@@ -52,7 +56,9 @@ main()
     return 0;
 }
 
-// Called when thread is created
+/**
+ * Called when thread is created. Handles the thread behaviour.
+ */
 static void *run(void *arg) {
 
     int rval;
