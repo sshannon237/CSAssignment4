@@ -11,7 +11,6 @@
 #include <iostream>
 #include "HttpRequest.hpp"
 #include "HttpResponse.hpp"
-// #include "Servlet.hpp"
 #include "FileUploadServlet.hpp"
 #include "InvalidRequestException.hpp"
 using namespace std;

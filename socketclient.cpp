@@ -83,6 +83,9 @@ int Socketclient::uploadFile() {
             write(sock, send_buffer, sizeof(send_buffer));
             bzero(send_buffer, sizeof(send_buffer));
         }
+        while (rval = read(sock, buffer, 1024) > 0){
+            printf("%s\n", buffer);
+        }
     }
 
     return 0;
