@@ -10,6 +10,7 @@
    5. `g++ -o socketclient socketclient.cpp Activity.cpp`
    6. `./socketclient.exe`
    7. Follow the prompts in the console
+   8. Images need to be placed in the root directory of the project to be uploaded
 3. Access the server through browser
    1. Navigate to localhost:8888 on a web browser
    2. Fill out the form. Any file can be uploaded, not just an image!
